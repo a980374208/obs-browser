@@ -301,6 +301,23 @@ bool BrowserClient::OnTooltip(CefRefPtr<CefBrowser>, CefString &text)
 	return true;
 }
 
+void BrowserClient::OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> browser, const CefRange &selected_range,
+						 const RectList &character_bounds)
+{
+	if (!character_bounds.empty()) {
+		auto r = character_bounds[character_bounds.size() - 1];
+		auto handle = obs_source_get_signal_handler(source_);
+		struct calldata data;
+		calldata_init(&data);
+		calldata_set_int(&data, "x", r.x);
+		calldata_set_int(&data, "y", r.y);
+		calldata_set_int(&data, "w", r.width);
+		calldata_set_int(&data, "h", r.height);
+		signal_handler_signal(handle, "composition_change", &data);
+		calldata_free(&data);
+	}
+}
+
 void BrowserClient::OnPaint(CefRefPtr<CefBrowser>, PaintElementType type, const RectList &, const void *buffer,
 			    int width, int height)
 {

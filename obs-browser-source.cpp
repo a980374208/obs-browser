@@ -194,8 +194,8 @@ bool BrowserSource::CreateBrowser()
 		bool hwaccel = false;
 #endif
 
-		CefRefPtr<BrowserClient> browserClient =
-			new BrowserClient(this, hwaccel && tex_sharing_avail, reroute_audio, webpage_control_level);
+		CefRefPtr<BrowserClient> browserClient = new BrowserClient(
+			this, hwaccel && tex_sharing_avail, reroute_audio, webpage_control_level, source);
 
 		CefWindowInfo windowInfo;
 		windowInfo.bounds.width = width;
@@ -300,6 +300,27 @@ void BrowserSource::SendMouseWheel(const struct obs_mouse_event *event, int x_de
 			cefBrowser->GetHost()->SendMouseWheelEvent(e, x_delta, y_delta);
 		},
 		true);
+}
+
+void BrowserSource::SendCommitText(const char *text)
+{
+	cefBrowser->GetHost()->ImeCommitText(text, CefRange(UINT32_MAX, UINT32_MAX), 0);
+}
+
+void BrowserSource::SendCommitComposition(const char *text, int attr_start)
+{
+	CefCompositionUnderline underline;
+	underline.background_color = 0;
+	CefRange selection_range;
+	selection_range.Set(attr_start, attr_start);
+	underline.range = {0, static_cast<decltype(CefRange::to)>(strlen(text))};
+	cefBrowser->GetHost()->ImeSetComposition(text, {underline}, CefRange(UINT32_MAX, UINT32_MAX),
+						 selection_range);
+}
+
+void BrowserSource::SendCancelComposition()
+{
+	cefBrowser->GetHost()->ImeCancelComposition();
 }
 
 void BrowserSource::SendFocus(bool focus)

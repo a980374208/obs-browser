@@ -38,6 +38,7 @@ class BrowserClient : public CefClient,
 	bool sharing_available = false;
 	bool reroute_audio = true;
 	ControlLevel webpage_control_level = DEFAULT_CONTROL_LEVEL;
+	obs_source_t *source_;
 
 	inline bool valid() const;
 
@@ -54,11 +55,12 @@ public:
 	int frames_per_buffer;
 
 	inline BrowserClient(BrowserSource *bs_, bool sharing_avail, bool reroute_audio_,
-			     ControlLevel webpage_control_level_)
+			     ControlLevel webpage_control_level_, obs_source_t *source)
 		: sharing_available(sharing_avail),
 		  reroute_audio(reroute_audio_),
 		  webpage_control_level(webpage_control_level_),
-		  bs(bs_)
+		  bs(bs_),
+		  source_(source)
 	{
 	}
 
@@ -115,6 +117,8 @@ public:
 					 CefRefPtr<CefMenuModel> model) override;
 
 	/* CefRenderHandler */
+	virtual void OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> browser, const CefRange &selected_range,
+						  const RectList &character_bounds) override;
 	virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect) override;
 	virtual void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects,
 			     const void *buffer, int width, int height) override;

@@ -184,6 +184,8 @@ static obs_properties_t *browser_source_get_properties(void *data)
 	obs_properties_add_int(props, "width", obs_module_text("Width"), 1, 8192, 1);
 	obs_properties_add_int(props, "height", obs_module_text("Height"), 1, 8192, 1);
 
+	obs_properties_add_bool(props, "size_follow_window", obs_module_text("SizeFollowWindow"));
+
 	obs_properties_add_bool(props, "reroute_audio", obs_module_text("RerouteAudio"));
 
 	obs_property_t *fps_set = obs_properties_add_bool(props, "fps_custom", obs_module_text("CustomFrameRate"));
@@ -473,6 +475,15 @@ void RegisterBrowserSource()
 	};
 	info.mouse_wheel = [](void *data, const struct obs_mouse_event *event, int x_delta, int y_delta) {
 		static_cast<BrowserSource *>(data)->SendMouseWheel(event, x_delta, y_delta);
+	};
+	info.commit_text = [](void *data, const char *text) {
+		static_cast<BrowserSource *>(data)->SendCommitText(text);
+	};
+	info.commit_composition = [](void *data, const char *text, int attr_start) {
+		static_cast<BrowserSource *>(data)->SendCommitComposition(text, attr_start);
+	};
+	info.cancel_composition = [](void *data) {
+		static_cast<BrowserSource *>(data)->SendCancelComposition();
 	};
 	info.focus = [](void *data, bool focus) {
 		static_cast<BrowserSource *>(data)->SendFocus(focus);

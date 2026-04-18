@@ -120,6 +120,9 @@ struct BrowserSource {
 	void SendMouseClick(const struct obs_mouse_event *event, int32_t type, bool mouse_up, uint32_t click_count);
 	void SendMouseMove(const struct obs_mouse_event *event, bool mouse_leave);
 	void SendMouseWheel(const struct obs_mouse_event *event, int x_delta, int y_delta);
+	void SendCommitText(const char *text);
+	void SendCommitComposition(const char *text, int attr_start);
+	void SendCancelComposition();
 	void SendFocus(bool focus);
 	void SendKeyClick(const struct obs_key_event *event, bool key_up);
 	void SetShowing(bool showing);
